@@ -6,6 +6,41 @@
 #include<map>
 using namespace std;
 
+map<string, int> getLabels(vector<vector<string>>* code, map<string, int> mainFunctions){
+    map<string, int> labels = {};
+    vector<vector<string>> sourcecode = *code;
+    const int numberoflines = sourcecode.size();
+
+    vector<string> line;
+    for(int j=0; j<numberoflines; j++){
+        line=sourcecode[j];
+        if (!(mainFunctions.count(line[0])==1) && (line[1] != "DAT")){
+            labels[line[0]] = j;
+            cout << j << endl;
+            sourcecode[j].erase(sourcecode[j].begin());
+
+        }
+    }
+    return labels;
+}
+
+map<string, int> getVariables(vector<vector<string>>* code, map<string, int> mainFunctions){
+    map<string, int> variables = {};
+    vector<vector<string>> sourcecode = *code;
+    const int numberoflines = sourcecode.size();
+
+    vector<string> line;
+    for(int j=0; j<numberoflines; j++){
+        line=sourcecode[j];
+        if (!(mainFunctions.count(line[0])==1) && (line[1] == "DAT")){
+            variables[line[0]] = j;
+            cout << j << endl;
+            sourcecode[j].erase(sourcecode[j].begin());
+
+        }
+    }
+    return variables;
+}
 vector<string> split(const string& s, char delimiter) {
     vector<string> result;
     stringstream ss(s);
@@ -62,19 +97,12 @@ int main(){
         }else{
             lines.push_back(vector<string>{line});
         }
-       
-        
     }
+    vector<vector<string>>* ptr = &lines;
+    map<string, int> labels = getLabels(ptr, mainfunctions);
+    map<string, int> variables = getVariables(ptr, mainfunctions);
+    cout << "hello world" << endl;
     vector<string> memory = {"000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "009", "000", "000", "000", "000"};
- /*
-    const int d = lines.size();
-    int e;
-    for(int i=0; i<d;i++){
-        e = lines[i].size();
-        for (int j=0; j<e;j++){
-            cout << i << " " << j << " "<< lines[i][j] << endl;
-        } 
-    }*/
     vector<string> c;
     int k;
     const int lineLength = lines.size();
@@ -95,10 +123,15 @@ int main(){
         } 
         
     }
-    const int sizeOfMemory = memory.size();
-    for(int l=0; l<sizeOfMemory; l++){
-        cout << memory[l] << endl;
+    for (const auto& [key, value] : labels) {
+        cout << key << " : " << value << endl;
     }
+    for (const auto& [key, value] : variables) {
+        cout << key << " : " << value << endl;
+    }
+
+    
+    return 0;
 }
 
 
