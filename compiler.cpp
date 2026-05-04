@@ -2,6 +2,8 @@
 #include <fstream>
 #include<vector>
 #include<sstream>
+#include <string>
+#include<map>
 using namespace std;
 
 vector<string> split(const string& s, char delimiter) {
@@ -14,6 +16,15 @@ vector<string> split(const string& s, char delimiter) {
     }
 
     return result;
+}
+string getValue(string instruc){
+    string value = "";
+    for (char c : instruc) {
+            if (isdigit(c)) {
+                value += c;
+            }
+        }
+    return value;
 }
 bool linearSearch(vector<string> searchlist, string searchTerm){
     int n =0;
@@ -40,6 +51,7 @@ int main(){
     int index = 0;
     vector<string> splitLine;
     vector<string> dontrequireinput = {"INP", "OUT", "HLT"};
+    map<string, int> mainfunctions = {{"INP",901},{"ADD",100},{"SUB", 200}, {"BRA",600}, {"BRZ", 700}, {"BRP",800}, {"LDA", 700}, {"STA", 300}, {"HLT", 0}, {"OUT", 902}};
     const int f = code.size();
     vector<vector<string>> lines= {};
     for(int i=0; i<f;i++){
@@ -53,6 +65,7 @@ int main(){
        
         
     }
+    vector<string> memory = {"000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "009", "000", "000", "000", "000"};
  /*
     const int d = lines.size();
     int e;
@@ -60,13 +73,32 @@ int main(){
         e = lines[i].size();
         for (int j=0; j<e;j++){
             cout << i << " " << j << " "<< lines[i][j] << endl;
-        }
-    
-        
+        } 
     }*/
-
-    
-
+    vector<string> c;
+    int k;
+    const int lineLength = lines.size();
+    int val;
+    for(int i=0; i<lineLength;i++){
+        c = lines[i];
+        if (mainfunctions.count(c[0])){
+            if (linearSearch(dontrequireinput, c[0])){
+                if(c[0] == "HLT"){
+                    memory[i] = "000";
+                }else{
+                    memory[i] = to_string(mainfunctions[c[0]]);
+                }
+            }else{
+                val = stoi(getValue(c[c.size()-1]));
+                memory[i] = to_string(mainfunctions[c[0]]+val);
+            }
+        } 
+        
+    }
+    const int sizeOfMemory = memory.size();
+    for(int l=0; l<sizeOfMemory; l++){
+        cout << memory[l] << endl;
+    }
 }
 
 
