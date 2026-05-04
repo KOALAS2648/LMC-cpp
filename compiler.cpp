@@ -8,36 +8,41 @@ using namespace std;
 
 map<string, int> getLabels(vector<vector<string>>* code, map<string, int> mainFunctions){
     map<string, int> labels = {};
-    vector<vector<string>> sourcecode = *code;
+    vector<vector<string>> &sourcecode = *code;
     const int numberoflines = sourcecode.size();
 
     vector<string> line;
-    for(int j=0; j<numberoflines; j++){
+    for(int j=0; j<numberoflines;){
         line=sourcecode[j];
-        if (!(mainFunctions.count(line[0])==1) && (line[1] != "DAT")){
+        if ((mainFunctions.find(line[0])==mainFunctions.end()) && (line[1] != "DAT")){
             labels[line[0]] = j;
-            cout << j << endl;
             sourcecode[j].erase(sourcecode[j].begin());
 
+        }else{
+            j++;
         }
     }
     return labels;
 }
 
-map<string, int> getVariables(vector<vector<string>>* code, map<string, int> mainFunctions){
-    map<string, int> variables = {};
-    vector<vector<string>> sourcecode = *code;
+map<string,  int> getVariables(vector<vector<string>>* code, map<string, int> mainFunctions){
+    map<string,  int> variables = {};
+    vector<vector<string>> &sourcecode = *code;
     const int numberoflines = sourcecode.size();
-
+    string varname;
     vector<string> line;
     for(int j=0; j<numberoflines; j++){
         line=sourcecode[j];
-        if (!(mainFunctions.count(line[0])==1) && (line[1] == "DAT")){
-            variables[line[0]] = j;
-            cout << j << endl;
-            sourcecode[j].erase(sourcecode[j].begin());
+        
+        if (mainFunctions.find(line[0])==mainFunctions.end()){
+            if ((line[1] == "DAT")){
+                varname = line[0];
+                variables[varname] = j;
+                sourcecode[j].erase(sourcecode[j].begin());
 
+            }
         }
+        
     }
     return variables;
 }
@@ -76,8 +81,6 @@ int main(){
     string myText;
     vector<string> code = {};
     while (getline(sourceCode, myText)) {
-    // Output the text from the file
-    //cout << myText << endl;
     code.push_back(myText);
     
     }
@@ -86,7 +89,8 @@ int main(){
     int index = 0;
     vector<string> splitLine;
     vector<string> dontrequireinput = {"INP", "OUT", "HLT"};
-    map<string, int> mainfunctions = {{"INP",901},{"ADD",100},{"SUB", 200}, {"BRA",600}, {"BRZ", 700}, {"BRP",800}, {"LDA", 700}, {"STA", 300}, {"HLT", 0}, {"OUT", 902}};
+    vector<string> loops = {"BRZ", "BRA", "BRP"};
+    map<string, int> mainfunctions = {{"INP",901},{"ADD",100},{"SUB", 200}, {"BRA",600}, {"BRZ", 700}, {"BRP",800}, {"LDA", 700}, {"STA", 300}, {"HLT", 0}, {"OUT", 902}, {"DAT", 0}};
     const int f = code.size();
     vector<vector<string>> lines= {};
     for(int i=0; i<f;i++){
@@ -101,13 +105,39 @@ int main(){
     vector<vector<string>>* ptr = &lines;
     map<string, int> labels = getLabels(ptr, mainfunctions);
     map<string, int> variables = getVariables(ptr, mainfunctions);
-    cout << "hello world" << endl;
+
     vector<string> memory = {"000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "000", "000", "000", "000", "000","000", "000", "000", "000", "000", "009", "000", "000", "000", "000"};
     vector<string> c;
     int k;
     const int lineLength = lines.size();
     int val;
+    int lastidx;
+    string labelname;
+    string varname;
+    vector<vector<string>>* linesPointer = &lines;
+    int it;
     for(int i=0; i<lineLength;i++){
+        c = lines[i];
+        
+        lastidx = c.size()-1;
+        if(linearSearch(loops, c[0])){
+                if(labels.find(c[lastidx]) != labels.end()){
+                    labelname = c[lastidx];
+                    it = labels[labelname];
+                    (*linesPointer)[i][lastidx] = to_string(it);
+                }
+                
+            }
+
+
+        if(variables.find(c[lastidx]) != variables.end()){
+            varname = c[lastidx];
+            it = variables[varname];
+            (*linesPointer)[i][lastidx] = to_string(it);
+        }
+        if(i==17){
+            for(string d: lines[i]){cout<<d <<endl;}
+        }
         c = lines[i];
         if (mainfunctions.count(c[0])){
             if (linearSearch(dontrequireinput, c[0])){
@@ -117,17 +147,25 @@ int main(){
                     memory[i] = to_string(mainfunctions[c[0]]);
                 }
             }else{
-                val = stoi(getValue(c[c.size()-1]));
-                memory[i] = to_string(mainfunctions[c[0]]+val);
+                if(c[0] == "DAT"){
+                    val = stoi(getValue(c[c.size()-1]));
+                    if(val < 10){
+                        memory[i] = "00"+to_string(mainfunctions[c[0]]+val);
+                    }else{
+                        memory[i] = "0"+to_string(mainfunctions[c[0]]+val);
+                    }
+                }else{
+                    val = stoi(getValue(c[c.size()-1]));
+                    memory[i] = to_string(mainfunctions[c[0]]+val);
+                }
             }
         } 
         
     }
-    for (const auto& [key, value] : labels) {
-        cout << key << " : " << value << endl;
-    }
-    for (const auto& [key, value] : variables) {
-        cout << key << " : " << value << endl;
+    
+    const int sizeofmemory = memory.size();
+    for(int h=0; h<sizeofmemory; h++){
+        cout <<"\"" << memory[h] << "\"" ",";
     }
 
     
