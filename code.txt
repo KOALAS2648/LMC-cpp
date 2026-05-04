@@ -1,0 +1,6 @@
+INP
+STA 6
+INP
+SUB 6
+OUT
+HLT
