@@ -80,10 +80,7 @@ int main(){
     ifstream sourceCode("code.txt");
     string myText;
     vector<string> code = {};
-    while (getline(sourceCode, myText)) {
-    code.push_back(myText);
-    
-    }
+    while (getline(sourceCode, myText)) {code.push_back(myText);}
     string line;
     int sizeOfline;
     int index = 0;
