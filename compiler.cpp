@@ -81,6 +81,10 @@ int main(){
     string myText;
     vector<string> code = {};
     while (getline(sourceCode, myText)) {code.push_back(myText);}
+    if(code.size() >= 100)
+    {
+         throw invalid_argument( "the source code file needs to 99 lines or less" );
+    }
     string line;
     int sizeOfline;
     int index = 0;
