@@ -40,8 +40,9 @@ bool linearSearch(vector<string> searchlist, string searchTerm){
     return false;
 
 }
-int main(){
-    ifstream sourceCode("code.txt");
+vector<string> readFile(string filename)
+{
+    ifstream sourceCode(filename);
     string myText;
     vector<string> code = {};
     while (getline(sourceCode, myText)) {code.push_back(myText);}
@@ -49,6 +50,10 @@ int main(){
     {
          throw invalid_argument( "the source code file needs to 99 lines or less" );
     }
+}
+vector<string> compile(string filename)
+{
+    vector<string> code = readFile(filename);
     string line;
     int sizeOfline;
     int index = 0;
@@ -132,9 +137,10 @@ int main(){
     for(int h=0; h<sizeofmemory; h++){
         cout <<"\"" << memory[h] << "\"" ",";
     }
-
+}
+int main(){
+    
+    vector<string> mem = compile("code.txt");
     
     return 0;
 }
-
-
