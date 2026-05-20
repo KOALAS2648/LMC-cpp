@@ -4,48 +4,12 @@
 #include<sstream>
 #include <string>
 #include<map>
+#include "hf/labels.hpp"
+#include "hf/variables.hpp"
 using namespace std;
+using namespace GetLabel;
+using namespace GetVariables;
 
-map<string, int> getLabels(vector<vector<string>>* code, map<string, int> mainFunctions){
-    map<string, int> labels = {};
-    vector<vector<string>> &sourcecode = *code;
-    const int numberoflines = sourcecode.size();
-
-    vector<string> line;
-    for(int j=0; j<numberoflines;){
-        line=sourcecode[j];
-        if ((mainFunctions.find(line[0])==mainFunctions.end()) && (line[1] != "DAT")){
-            labels[line[0]] = j;
-            sourcecode[j].erase(sourcecode[j].begin());
-
-        }else{
-            j++;
-        }
-    }
-    return labels;
-}
-
-map<string,  int> getVariables(vector<vector<string>>* code, map<string, int> mainFunctions){
-    map<string,  int> variables = {};
-    vector<vector<string>> &sourcecode = *code;
-    const int numberoflines = sourcecode.size();
-    string varname;
-    vector<string> line;
-    for(int j=0; j<numberoflines; j++){
-        line=sourcecode[j];
-        
-        if (mainFunctions.find(line[0])==mainFunctions.end()){
-            if ((line[1] == "DAT")){
-                varname = line[0];
-                variables[varname] = j;
-                sourcecode[j].erase(sourcecode[j].begin());
-
-            }
-        }
-        
-    }
-    return variables;
-}
 vector<string> split(const string& s, char delimiter) {
     vector<string> result;
     stringstream ss(s);

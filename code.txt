@@ -1,6 +1,18 @@
 INP
-STA 6
+STA num1
 INP
-SUB 6
+loop STA count
+LDA sum
+ADD num1
+STA sum
+LDA count
+SUB one
+BRZ end
+BRP loop
+end LDA sum
 OUT
 HLT
+num1 DAT 0
+count DAT 0
+sum DAT 0
+one DAT 1
